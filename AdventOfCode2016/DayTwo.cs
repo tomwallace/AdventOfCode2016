@@ -23,6 +23,7 @@ RURRRRURUDDRLURUDULRDUDDDUURULDRRRRURDLDRRLLDLUDLRRLRRUULLURULLRDLLRDDDDULLRLLDD
             { "", "", "D", "", "" }
         };
 
+        // Determines the appropriate bathroom code based on instructions moving over a keypad
         public string DetermineBathroomCode(string input, int horizontal, int vertical, string[,] keyPad)
         {
             string result = "";

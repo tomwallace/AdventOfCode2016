@@ -1071,7 +1071,7 @@ bxaxipgn-vgpst-qphzti-rdcipxcbtci-635[ipctx]";
         {
             // Sort the Dictionary
             List<KeyValuePair<char, int>> listOfLetters = letterCount.ToList();
-            listOfLetters.Sort(CompareDictionary);
+            listOfLetters.Sort(SortingUtility.CompareDictionary);
 
             // Grab the first 5 keys
             string output = "";
@@ -1084,16 +1084,6 @@ bxaxipgn-vgpst-qphzti-rdcipxcbtci-635[ipctx]";
             string firstFive = output.Substring(0, 5);
 
             return checksum == firstFive;
-        }
-
-        private int CompareDictionary(KeyValuePair<char, int> pair1, KeyValuePair<char, int> pair2)
-        {
-            // If the same number of entries, sort alphabetically
-            if (pair1.Value == pair2.Value)
-                return pair1.Key.CompareTo(pair2.Key);
-
-            // Otherwise sort in reverse count
-            return pair2.Value.CompareTo(pair1.Value);
         }
 
         // To decrypt a character, we convert to ascii and then increment a number of times equal to the sectorId

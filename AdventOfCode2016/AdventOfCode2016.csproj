@@ -43,12 +43,18 @@
     <Compile Include="DayFive.cs" />
     <Compile Include="DayFour.cs" />
     <Compile Include="DayOne.cs" />
+    <Compile Include="Seven\DaySeven.cs" />
     <Compile Include="DaySix.cs" />
     <Compile Include="DayThree.cs" />
     <Compile Include="DayTwo.cs" />
     <Compile Include="LastYearDayOne.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortingUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Seven\DaySevenInput.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -29,7 +29,6 @@ namespace AdventOfCode2016.Tests
 
             Assert.Equal("05ace8e3", result);
         }
-        */
 
         [Fact]
         public void testGetMd5Hash()
@@ -73,5 +72,6 @@ namespace AdventOfCode2016.Tests
 
             Assert.Equal("f2c730e5", result);
         }
+        */
     }
 }

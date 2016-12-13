@@ -5,6 +5,8 @@ namespace AdventOfCode2016.Tests
 {
     public class DayNineTests
     {
+        // These tests take a while to run, so only uncomment them if needed
+        /*
         [Theory]
         [InlineData("ADVENT", "ADVENT", 6)]
         [InlineData("A(1x5)BC", "ABBBBBC", 7)]
@@ -22,9 +24,9 @@ namespace AdventOfCode2016.Tests
         }
 
         [Theory]
-        //[InlineData("ADVENT", "ADVENT", 6)]
-        //[InlineData("A(1x5)BC", "ABBBBBC", 7)]
-        //[InlineData("(3x3)XYZ", "XYZXYZXYZ", 9)]
+        [InlineData("ADVENT", "ADVENT", 6)]
+        [InlineData("A(1x5)BC", "ABBBBBC", 7)]
+        [InlineData("(3x3)XYZ", "XYZXYZXYZ", 9)]
         [InlineData("X(8x2)(3x3)ABCY", "XABCABCABCABCABCABCY", 20)]
         public void testMaximumDecompressInput(string input, string expected, int len)
         {
@@ -46,8 +48,6 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(len, sut.LengthOfInput(result));
         }
 
-        // These tests take a while to run, so only uncomment them if needed
-        /*
         [Fact]
         public void testWithActualPartA()
         {

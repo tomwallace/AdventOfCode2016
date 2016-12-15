@@ -59,6 +59,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DayElevenTests.cs" />
+    <Compile Include="DayFourteenTests.cs" />
+    <Compile Include="DayThirteenTests.cs" />
     <Compile Include="DayTwelveTests.cs" />
     <Compile Include="DayFiveTests.cs" />
     <Compile Include="DayNineTests.cs" />

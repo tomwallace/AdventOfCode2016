@@ -109,7 +109,6 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(3, result.Count());
         }
 
-        // Takes a while to run, so uncomment if necessary
         /*
         [Fact]
         public void testNumberOfPossibleStepsToSafelyMoveObjects()
@@ -126,8 +125,7 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(11, result);
         }
         */
-
-        // TODO Run when can let run a while
+        // Takes a while to run, so uncomment if necessary
         /*
         [Fact]
         public void testWithActualPartA()

@@ -43,20 +43,8 @@ namespace AdventOfCode2016
             List<int> possibleElevatorStops = floorState.ListOfPossibleFloors();
             foreach (int targetedFloor in possibleElevatorStops)
             {
-                List<string> objectFloor = floorState.CurrentObjectFloor().ToList();
-                // Can always move one element
-                foreach (string obj in objectFloor)
-                {
-                    // Make a copy so we can modify original
-                    List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
-                    copyOfObjectFloors[targetedFloor].Add(obj);
-                    copyOfObjectFloors[floorState.Elevator].Remove(obj);
+                bool canMovePairInvalidCombo = false;
 
-                    // Make new FloorState and if valid, add to queue
-                    FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
-                    if (!newFloorState.IsInvalidSituation())
-                        _queue.Add(newFloorState);
-                }
                 // Now need to handle all valid pairs
                 List<string> objectFloorForPairs = floorState.CurrentObjectFloor().ToList();
                 /*
@@ -86,7 +74,10 @@ namespace AdventOfCode2016
                             // Make new FloorState and if valid, add to queue
                             FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
                             if (!newFloorState.IsInvalidSituation())
+                            {
                                 _queue.Add(newFloorState);
+                                canMovePairInvalidCombo = true;
+                            }
                         }
                     }
                     else
@@ -96,6 +87,27 @@ namespace AdventOfCode2016
                         copyOfObjectFloors[targetedFloor].Add(combo.Item2);
                         copyOfObjectFloors[floorState.Elevator].Remove(combo.Item1);
                         copyOfObjectFloors[floorState.Elevator].Remove(combo.Item2);
+
+                        // Make new FloorState and if valid, add to queue
+                        FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
+                        if (!newFloorState.IsInvalidSituation())
+                        {
+                            _queue.Add(newFloorState);
+                            canMovePairInvalidCombo = false;
+                        }
+                    }
+                }
+
+                // Can move one element, but only if there was not a valid pair movement
+                List<string> objectFloor = floorState.CurrentObjectFloor().ToList();
+                if (!canMovePairInvalidCombo)
+                {
+                    foreach (string obj in objectFloor)
+                    {
+                        // Make a copy so we can modify original
+                        List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
+                        copyOfObjectFloors[targetedFloor].Add(obj);
+                        copyOfObjectFloors[floorState.Elevator].Remove(obj);
 
                         // Make new FloorState and if valid, add to queue
                         FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
@@ -281,7 +293,8 @@ namespace AdventOfCode2016
         public List<int> ListOfPossibleFloors()
         {
             List<int> results = new List<int>();
-            if (Elevator > 0)
+            // Don't go down if there is nothing to go down for
+            if (Elevator > 0 && ObjectFloors[Elevator - 1].Count > 0)
                 results.Add(Elevator - 1);
 
             if (Elevator < 3)

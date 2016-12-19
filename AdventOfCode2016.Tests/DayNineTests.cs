@@ -67,5 +67,14 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(1, result);
         }
         */
+
+        [Fact]
+        public void testWithActualPartB()
+        {
+            var sot = new DayNine();
+            var result = sot.LengthOfMaximumDecompressedFile();
+
+            Assert.Equal(11317278863, result);
+        }
     }
 }

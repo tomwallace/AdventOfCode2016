@@ -245,11 +245,14 @@ namespace AdventOfCode2016
 
         public int Elevator;
 
+        public List<FloorState> PreviousStates;
+
         public FloorState(int step, List<List<string>> objectFloors, int elevator)
         {
             Step = step;
             ObjectFloors = objectFloors;
             Elevator = elevator;
+            PreviousStates = new List<FloorState>();
         }
 
         public bool IsInvalidSituation()
@@ -294,7 +297,13 @@ namespace AdventOfCode2016
         {
             List<int> results = new List<int>();
             // Don't go down if there is nothing to go down for
-            if (Elevator > 0 && ObjectFloors[Elevator - 1].Count > 0)
+            bool anythingBelow = false;
+            for (int i = 0; i < Elevator; i++)
+            {
+                if (ObjectFloors[i].Count > 0)
+                    anythingBelow = true;
+            }
+            if (Elevator > 0 && anythingBelow)
                 results.Add(Elevator - 1);
 
             if (Elevator < 3)
@@ -322,6 +331,16 @@ namespace AdventOfCode2016
             }
 
             return clone;
+        }
+
+        public bool HaveSeenBefore()
+        {
+            // All state pairs are interchangeable
+            bool result = false;
+            foreach (FloorState state in PreviousStates)
+            {
+            }
+            return false;
         }
     }
 }

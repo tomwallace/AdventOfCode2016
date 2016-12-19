@@ -109,6 +109,7 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(3, result.Count());
         }
 
+        // TODO: Arriving at a value of 13, need to re-examine
         /*
         [Fact]
         public void testNumberOfPossibleStepsToSafelyMoveObjects()
@@ -125,7 +126,6 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(11, result);
         }
         */
-        // Takes a while to run, so uncomment if necessary
         /*
         [Fact]
         public void testWithActualPartA()
@@ -143,7 +143,6 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(11, result);
         }
         */
-
         /*
         [Fact]
         public void testWithActualPartB()

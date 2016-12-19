@@ -27,8 +27,8 @@ namespace AdventOfCode2016.Nine
             file.Close();
 
             // Decompress the string
-            string decompressed = MaximumDecompressInput(line);
-            return LengthOfInput(decompressed);
+            long decompressed = GetLengthRecursion(line);
+            return decompressed;
         }
 
         public string MaximumDecompressInput(string input)
@@ -56,6 +56,7 @@ namespace AdventOfCode2016.Nine
             return finalResult;
         }
 
+        // TODO: Refactor this into a recursive mechanism
         public string DecompressInput(string input)
         {
             string result = "";
@@ -104,6 +105,28 @@ namespace AdventOfCode2016.Nine
         public long LengthOfInput(string input)
         {
             return input.Length;
+        }
+
+        public long GetLengthRecursion(string input)
+        {
+            // Exit condition
+            if (!input.Contains('('))
+                return input.Length;
+
+            long fullcount = 0;
+            int i = 0;
+            while (i < input.Length)
+            {
+                if (input[i] != '(') { i++; fullcount++; continue; }
+
+                int length = Convert.ToInt32(input.Substring(i + 1, input.IndexOf('x', i) - i - 1));
+                int count = Convert.ToInt32(input.Substring(input.IndexOf('x', i) + 1, input.IndexOf(')', i) - input.IndexOf('x', i) - 1));
+                int clength = 3 + count.ToString().Length + length.ToString().Length;
+                string part = input.Substring(i + clength, length);
+                fullcount += GetLengthRecursion(part) * count;
+                i += clength + length;
+            }
+            return fullcount;
         }
     }
 }

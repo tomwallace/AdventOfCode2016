@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using Xunit;
+﻿using Xunit;
 
 namespace AdventOfCode2016.Tests
 {
@@ -10,6 +9,10 @@ namespace AdventOfCode2016.Tests
         [InlineData("0", 2, "00")]
         [InlineData("11111", 11, "11111000000")]
         [InlineData("111100001010", 25, "1111000010100101011110000")]
+        [InlineData("10000", 11, "10000011110")]
+        [InlineData("10000", 17, "10000011110010000")]
+        [InlineData("10000", 18, "100000111100100001")]
+        [InlineData("10000", 23, "10000011110010000111110")]
         public void testCreateDragonCurveOfWidth(string input, int width, string expected)
         {
             var sut = new DaySixteen();
@@ -45,17 +48,13 @@ namespace AdventOfCode2016.Tests
             Assert.Equal("00000100100001100", result);
         }
 
-        /*
-        // TODO: Need to get this to work more effieciently
-        // Need to run this overnight
         [Fact]
         public void testWithActualPartB()
         {
             var sut = new DaySixteen();
             var result = sut.CalculateCheckSumToFillDisk("11011110011011101", 35651584);
 
-            Assert.Equal("1", result);
+            Assert.Equal("00011010100010010", result);
         }
-        */
     }
 }

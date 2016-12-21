@@ -63,6 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortingUtility.cs" />
     <Compile Include="Ten\DayTen.cs" />
+    <Compile Include="Twenty\DayTwenty.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Eight\DayEightInput.txt">
@@ -75,6 +76,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Ten\DayTenInput.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Twenty\DayTwentyInput.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -49,9 +49,6 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(1830117, result);
         }
 
-        // TODO: This is wrong - need to approach it without a list I think
-        // Not 1, 31682 is too low
-        // This test took 374 minutes to run, so only uncomment when ready
         [Fact]
         public void testWithActualPartB()
         {

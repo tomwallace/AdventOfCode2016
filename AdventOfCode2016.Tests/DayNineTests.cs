@@ -5,8 +5,6 @@ namespace AdventOfCode2016.Tests
 {
     public class DayNineTests
     {
-        // These tests take a while to run, so only uncomment them if needed
-        /*
         [Theory]
         [InlineData("ADVENT", "ADVENT", 6)]
         [InlineData("A(1x5)BC", "ABBBBBC", 7)]
@@ -37,6 +35,8 @@ namespace AdventOfCode2016.Tests
             Assert.Equal(len, sut.LengthOfInput(result));
         }
 
+        // These tests take a while to run, so only uncomment them if needed
+        /*
         [Theory]
         [InlineData("(27x12)(20x12)(13x14)(7x10)(1x12)A", 241920)]
         [InlineData("(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN", 445)]
@@ -47,6 +47,7 @@ namespace AdventOfCode2016.Tests
 
             Assert.Equal(len, sut.LengthOfInput(result));
         }
+        */
 
         [Fact]
         public void testWithActualPartA()
@@ -56,17 +57,6 @@ namespace AdventOfCode2016.Tests
 
             Assert.Equal(183269, result);
         }
-
-        // TODO: Need to solve Part 2 as my response leads to system of our memory after 24 hours of running
-        [Fact]
-        public void testWithActualPartB()
-        {
-            var sot = new DayNine();
-            var result = sot.LengthOfMaximumDecompressedFile();
-
-            Assert.Equal(1, result);
-        }
-        */
 
         [Fact]
         public void testWithActualPartB()

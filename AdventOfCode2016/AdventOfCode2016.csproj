@@ -52,6 +52,7 @@
     <Compile Include="DaySeventeen.cs" />
     <Compile Include="DaySixteen.cs" />
     <Compile Include="DayThirteen.cs" />
+    <Compile Include="DayTwentyThree.cs" />
     <Compile Include="DayTwelve.cs" />
     <Compile Include="Eight\DayEight.cs" />
     <Compile Include="Md5Utility.cs" />

@@ -59,26 +59,24 @@ namespace AdventOfCode2016
                 foreach (var combo in combinations)
                 {
                     // If the two items are of different types, need to make sure valid
-                    if ((combo.Item1.Contains("M") && !combo.Item2.Contains("M")) ||
-                        (combo.Item2.Contains("M") && !combo.Item1.Contains("M")))
+                    string element = combo.Item1.Substring(0, 1);
+                    if ((combo.Item1.Contains("M") && combo.Item2.Contains("M")) ||
+                        (combo.Item1.Contains("G") && combo.Item2.Contains("G")) ||
+                         combo.Item2.Contains(element))
                     {
-                        // Only if they are of the same element can we proceed
-                        if (combo.Item1.Substring(0, 1) == combo.Item2.Substring(0, 1))
-                        {
-                            List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
-                            copyOfObjectFloors[targetedFloor].Add(combo.Item1);
-                            copyOfObjectFloors[targetedFloor].Add(combo.Item2);
-                            copyOfObjectFloors[floorState.Elevator].Remove(combo.Item1);
-                            copyOfObjectFloors[floorState.Elevator].Remove(combo.Item2);
+                        List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
+                        copyOfObjectFloors[targetedFloor].Add(combo.Item1);
+                        copyOfObjectFloors[targetedFloor].Add(combo.Item2);
+                        copyOfObjectFloors[floorState.Elevator].Remove(combo.Item1);
+                        copyOfObjectFloors[floorState.Elevator].Remove(combo.Item2);
 
-                            // Make new FloorState and if valid, add to queue
-                            FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
-                            if (!newFloorState.IsInvalidSituation() && floorState.HaveNotSeenBefore(newFloorState))
-                            {
-                                newFloorState.PreviousStates.Add(floorState);
-                                _queue.Add(newFloorState);
-                                canMovePairInvalidCombo = true;
-                            }
+                        // Make new FloorState and if valid, add to queue
+                        FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
+                        if (!newFloorState.IsInvalidSituation() && floorState.HaveNotSeenBefore(newFloorState))
+                        {
+                            newFloorState.PreviousStates.Add(floorState);
+                            _queue.Add(newFloorState);
+                            canMovePairInvalidCombo = true;
                         }
                     }
                     else
@@ -352,19 +350,22 @@ namespace AdventOfCode2016
         {
             return delegate (FloorState other)
             {
+                bool match = true;
                 for (int i = 0; i < 4; i++)
                 {
-                    List<string> rtgs = new List<string>();
-                    List<string> microChips = new List<string>();
+                    // If pairs per floor do not match, then return false
+                    int currentMicrochips = floorState.ObjectFloors[i].FindAll(m => m.Contains("M")).Count;
+                    int currentGenerators = floorState.ObjectFloors[i].FindAll(m => m.Contains("G")).Count;
+                    int otherMicrochips = floorState.ObjectFloors[i].FindAll(m => m.Contains("M")).Count;
+                    int otherGenerators = floorState.ObjectFloors[i].FindAll(m => m.Contains("G")).Count;
 
-                    // Split the rtgs and chips up
-                    foreach (string obj in floorState.ObjectFloors[i])
+                    if (currentMicrochips == otherMicrochips && currentGenerators == otherGenerators)
                     {
-                        if (!other.ObjectFloors[i].Contains(obj))
-                            return false;
+                        match = false;
+                        break;
                     }
                 }
-                return true;
+                return match;
             };
         }
     }

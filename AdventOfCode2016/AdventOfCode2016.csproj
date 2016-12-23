@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CombinationUtility.cs" />
     <Compile Include="DayEighteen.cs" />
     <Compile Include="DayEleven.cs" />
     <Compile Include="DayFifteen.cs" />
@@ -63,6 +64,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortingUtility.cs" />
     <Compile Include="Ten\DayTen.cs" />
+    <Compile Include="TwentyOne\DayTwentyOne.cs" />
+    <Compile Include="TwentyTwo\DayTwentyTwo.cs" />
     <Compile Include="Twenty\DayTwenty.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +79,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Ten\DayTenInput.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TwentyOne\DayTwentyOneInput.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TwentyTwo\DayTwentyTwoInput.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Twenty\DayTwentyInput.txt">

@@ -73,8 +73,9 @@ namespace AdventOfCode2016
 
                             // Make new FloorState and if valid, add to queue
                             FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
-                            if (!newFloorState.IsInvalidSituation())
+                            if (!newFloorState.IsInvalidSituation() && floorState.HaveNotSeenBefore(newFloorState))
                             {
+                                newFloorState.PreviousStates.Add(floorState);
                                 _queue.Add(newFloorState);
                                 canMovePairInvalidCombo = true;
                             }
@@ -90,8 +91,9 @@ namespace AdventOfCode2016
 
                         // Make new FloorState and if valid, add to queue
                         FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
-                        if (!newFloorState.IsInvalidSituation())
+                        if (!newFloorState.IsInvalidSituation() && floorState.HaveNotSeenBefore(newFloorState))
                         {
+                            newFloorState.PreviousStates.Add(floorState);
                             _queue.Add(newFloorState);
                             canMovePairInvalidCombo = false;
                         }
@@ -111,8 +113,11 @@ namespace AdventOfCode2016
 
                         // Make new FloorState and if valid, add to queue
                         FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
-                        if (!newFloorState.IsInvalidSituation())
+                        if (!newFloorState.IsInvalidSituation() && floorState.HaveNotSeenBefore(newFloorState))
+                        {
+                            newFloorState.PreviousStates.Add(floorState);
                             _queue.Add(newFloorState);
+                        }
                     }
                 }
             }
@@ -333,14 +338,34 @@ namespace AdventOfCode2016
             return clone;
         }
 
-        public bool HaveSeenBefore()
+        public bool HaveNotSeenBefore(FloorState floorState)
         {
             // All state pairs are interchangeable
             bool result = false;
-            foreach (FloorState state in PreviousStates)
+            if (PreviousStates.Find(ByObjectFloors(floorState)) != null)
+                return false;
+
+            return true;
+        }
+
+        private static Predicate<FloorState> ByObjectFloors(FloorState floorState)
+        {
+            return delegate (FloorState other)
             {
-            }
-            return false;
+                for (int i = 0; i < 4; i++)
+                {
+                    List<string> rtgs = new List<string>();
+                    List<string> microChips = new List<string>();
+
+                    // Split the rtgs and chips up
+                    foreach (string obj in floorState.ObjectFloors[i])
+                    {
+                        if (!other.ObjectFloors[i].Contains(obj))
+                            return false;
+                    }
+                }
+                return true;
+            };
         }
     }
 }

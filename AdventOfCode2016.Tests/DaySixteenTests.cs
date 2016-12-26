@@ -48,6 +48,8 @@ namespace AdventOfCode2016.Tests
             Assert.Equal("00000100100001100", result);
         }
 
+        // Takes a while to run, so only uncomment if needed
+        /*
         [Fact]
         public void testWithActualPartB()
         {
@@ -56,5 +58,6 @@ namespace AdventOfCode2016.Tests
 
             Assert.Equal("00011010100010010", result);
         }
+        */
     }
 }

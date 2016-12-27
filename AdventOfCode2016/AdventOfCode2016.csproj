@@ -40,7 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CombinationUtility.cs" />
+    <Compile Include="Utility\CombinationUtility.cs" />
+    <Compile Include="Maze\Coordinate.cs" />
+    <Compile Include="Maze\CoordinateEqualityComparer.cs" />
     <Compile Include="DayEighteen.cs" />
     <Compile Include="DayEleven.cs" />
     <Compile Include="DayFifteen.cs" />
@@ -56,7 +58,8 @@
     <Compile Include="DayTwentyThree.cs" />
     <Compile Include="DayTwelve.cs" />
     <Compile Include="Eight\DayEight.cs" />
-    <Compile Include="Md5Utility.cs" />
+    <Compile Include="Maze\MazeStep.cs" />
+    <Compile Include="Utility\Md5Utility.cs" />
     <Compile Include="Nine\DayNine.cs" />
     <Compile Include="Seven\DaySeven.cs" />
     <Compile Include="DaySix.cs" />
@@ -64,7 +67,7 @@
     <Compile Include="DayTwo.cs" />
     <Compile Include="LastYearDayOne.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SortingUtility.cs" />
+    <Compile Include="Utility\SortingUtility.cs" />
     <Compile Include="Ten\DayTen.cs" />
     <Compile Include="DayTwentyFour.cs" />
     <Compile Include="TwentyOne\DayTwentyOne.cs" />

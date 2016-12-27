@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Xunit;
+﻿using Xunit;
 
 namespace AdventOfCode2016.Tests
 {
@@ -22,10 +21,8 @@ namespace AdventOfCode2016.Tests
 
             var cell = maze[3][1];
 
-            Assert.Equal("31", cell.Id);
-            Assert.True(cell.IsOpen);
-            Assert.Equal(4, cell.TargetNumber);
-            Assert.Equal(2, cell.Connected.Count);
+            Assert.True(cell.IsAvailable);
+            Assert.Equal(4, cell.GoalNumber);
         }
 
         [Fact]
@@ -38,63 +35,31 @@ namespace AdventOfCode2016.Tests
 ###########";
             var sut = new DayTwentyFour();
 
-            var result = sut.CountOfMinimumStepsNeededForGoals(input);
+            var result = sut.CountOfMinimumStepsNeededForGoals(input, false);
 
             Assert.Equal(14, result);
         }
 
+        // Takes about 30 sec to run, so only uncomment if necessary
         /*
         [Fact]
         public void testWithActualPartA()
         {
             var sut = new DayTwentyFour();
 
-            var result = sut.CountOfMinimumStepsNeededForGoals(DayTwentyFour.PUZZLE_INPUT);
+            var result = sut.CountOfMinimumStepsNeededForGoals(DayTwentyFour.PUZZLE_INPUT, false);
 
-            Assert.Equal(11, result);
-        }
-        */
-        /*
-        [Theory]
-        [InlineData("aaaaa-bbb-z-y-x-123[abxyz]", true)]
-        [InlineData("z-x-bbbb-aaaaa-y-123[abxyz]", true)]
-        [InlineData("a-b-c-d-e-f-g-h-987[abcde]", true)]
-        [InlineData("not-a-real-room-404[oarel]", true)]
-        [InlineData("totally-real-room-200[decoy]", false)]
-        public void testIsReal(string input, bool expected)
-        {
-            EncryptedRoom room = new EncryptedRoom(input);
-
-            Assert.Equal(expected, room.IsReal());
-        }
-
-        [Theory]
-        [InlineData("qzmt-zixmtkozy-ivhz-343[abxyz]", "very encrypted name")]
-        public void testDecryptedName(string input, string expected)
-        {
-            EncryptedRoom room = new EncryptedRoom(input);
-
-            Assert.Equal(expected, room.decryptedName);
-        }
-
-        [Fact]
-        public void testWithActualPartA()
-        {
-            var sot = new DayFour();
-            var result = sot.GetSumOfRealRoomSectorIds(DayFour.PUZZLE_INPUT);
-
-            Assert.Equal(361724, result);
+            Assert.Equal(500, result);
         }
 
         [Fact]
         public void testWithActualPartB()
         {
-            var sot = new DayFour();
-            var result = sot.ListRealRooms(DayFour.PUZZLE_INPUT);
-            var filteredList = result.FindAll(r => r.decryptedName.Contains("north"));
+            var sut = new DayTwentyFour();
 
-            Assert.Equal(1, filteredList.Count);
-            Assert.Equal(482, filteredList[0].sectorId);
+            var result = sut.CountOfMinimumStepsNeededForGoals(DayTwentyFour.PUZZLE_INPUT, true);
+
+            Assert.Equal(748, result);
         }
         */
     }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2016
 {
@@ -121,74 +119,6 @@ namespace AdventOfCode2016
             }
 
             return (numOnes % 2 == 0);
-        }
-    }
-
-    public class MazeStep
-    {
-        public Coordinate Coord;
-        public int Step;
-        public List<Coordinate> PreviousCoords;
-
-        public MazeStep(Coordinate coord, int step, List<Coordinate> previousCoords)
-        {
-            Coord = coord;
-            Step = step;
-            PreviousCoords = previousCoords;
-        }
-
-        public bool ReachedDesintation(Coordinate targetCoord)
-        {
-            return (Coord.X == targetCoord.X && Coord.Y == targetCoord.Y);
-        }
-
-        public bool HaveAlreadyBeenToCoordinate(Coordinate coord)
-        {
-            Coordinate match = PreviousCoords.Find(p => p.X == coord.X && p.Y == coord.Y);
-            return match != null;
-        }
-
-        public List<Coordinate> ClonePreviousCoords()
-        {
-            List<Coordinate> newList = new List<Coordinate>();
-            foreach (Coordinate coord in PreviousCoords)
-            {
-                newList.Add(coord);
-            }
-            return newList;
-        }
-    }
-
-    public class Coordinate
-    {
-        public int X;
-        public int Y;
-
-        public Coordinate(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-    }
-
-    public class CoordinateEqualityComparer : IEqualityComparer<Coordinate>
-    {
-        public bool Equals(Coordinate c1, Coordinate c2)
-        {
-            if (c2 == null && c1 == null)
-                return true;
-            else if (c1 == null | c2 == null)
-                return false;
-            else if (c1.X == c2.X && c1.Y == c2.Y)
-                return true;
-            else
-                return false;
-        }
-
-        public int GetHashCode(Coordinate c)
-        {
-            int hCode = c.X ^ c.Y;
-            return hCode.GetHashCode();
         }
     }
 }

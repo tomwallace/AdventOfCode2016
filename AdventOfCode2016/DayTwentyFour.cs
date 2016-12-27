@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AdventOfCode2016
 {
     public class DayTwentyFour
     {
-        public static string PUZZLE_INPUT = @"#########################################################################################################################################################################################
+        public static string PUZZLE_INPUT =
+            @"#########################################################################################################################################################################################
 #.#.......#.#.#.....#.#.......#.................#.......#.#.....#.....#...#...#.......#...#...........#.#.....#.............#.........#.............#.........#.....#.#.............#...#
 #.#####.#.#.#.#.#.#.#.#.#.###.#.#.###.#.#.###.###.#.#.#.#.#.#####.#.#.###.#.#.###.#.#.###.###.#.###.###.###.#.#.###.#.#.#.#.#.#.###.#.###.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###.#####.#.###.#
 #.....#.............#...#....6#.....#.....#.#...#.....#...#.........#.......#...#.#.....#.....#.#...#...#.....#.#.......#.........#...#...#.#.#.......#.........#.....#...#.#.#.#.....#.#
@@ -48,47 +50,21 @@ namespace AdventOfCode2016
 #...#.#...#.#.......#.......#.....#...#.......#...#...#...#.....#.#.....#...#.#...#.....#.#.........#.#.#.....#.....#...#.........#.#.#.......#.........#...#.....#.#...#.#...#.....#...#
 #########################################################################################################################################################################################";
 
-        public Queue<MazeState> _queue = new Queue<MazeState>();
+        public List<List<Coordinate>> _maze;
 
-        public int CountOfMinimumStepsNeededForGoals(string input)
+        // TODO: Clean up code as necessary
+        public int CountOfMinimumStepsNeededForGoals(string input, bool includeStartingPoint)
         {
-            List<List<MazeCell>> maze = InitializeMaze(input);
-            MazeCell currentCell = null;
-            List<MazeCell> goalCells = new List<MazeCell>();
-            foreach (List<MazeCell> row in maze)
+            _maze = InitializeMaze(input);
+            List<Coordinate> goalCells = new List<Coordinate>();
+            foreach (List<Coordinate> row in _maze)
             {
-                foreach (MazeCell cell in row)
+                foreach (Coordinate cell in row)
                 {
-                    //if (cell.TargetNumber == 0)
-                    //    currentCell = cell;
-
-                    if (cell.TargetNumber >= 0)
+                    if (cell.GoalNumber >= 0)
                         goalCells.Add(cell);
                 }
             }
-            /*
-            int totalDistance = 0;
-
-            while (goalCells.Count > 0)
-            {
-                int minDistance = 10000000;
-                MazeCell minDistanceCell = null;
-                foreach (MazeCell targetCell in goalCells)
-                {
-                    int distance = NumberOfStepsToTarget(currentCell, targetCell);
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                        minDistanceCell = targetCell;
-                    }
-                }
-
-                totalDistance += minDistance;
-                goalCells.Remove(minDistanceCell);
-            }
-
-            return totalDistance;
-            */
 
             List<PairDistance> distances = new List<PairDistance>();
 
@@ -96,99 +72,67 @@ namespace AdventOfCode2016
             foreach (var pair in allPairs)
             {
                 PairDistance pairDistance = new PairDistance();
-                MazeCell from = pair.Item1;
-                MazeCell to = pair.Item2;
+                Coordinate from = pair.Item1;
+                Coordinate to = pair.Item2;
                 int distance = NumberOfStepsToTarget(from, to);
-                pairDistance.From = from.TargetNumber;
-                pairDistance.To = to.TargetNumber;
+
+                pairDistance.From = from.GoalNumber;
+                pairDistance.To = to.GoalNumber;
                 pairDistance.Steps = distance;
                 distances.Add(pairDistance);
             }
 
-            int smallestDistance = GetMinimumDistanceAsTravelingSalesmanProblem(distances, goalCells);
+            int smallestDistance = GetMinimumDistanceAsTravelingSalesmanProblem(distances, goalCells, includeStartingPoint);
 
             return smallestDistance;
-
-            //var allCombos
-            /*
-            var allPairs = CombinationUtility.GetAllPermutationsToLength(goalCells, 2);
-            foreach (var pair in allPairs)
-            {
-                PairDistance pairDistance = new PairDistance();
-                MazeCell from = pair.ToList()[0];
-                MazeCell to = pair.ToList()[1];
-                int distance = NumberOfStepsToTarget(from, to);
-                pairDistance.From = from.TargetNumber;
-                pairDistance.To = to.TargetNumber;
-                pairDistance.Steps = distance;
-                distances.Add(pairDistance);
-            }
-            */
-            /*
-            MazeState initialState = new MazeState(0, start, new List<MazeCell>(), goalCells);
-            _queue.Enqueue(initialState);
-
-            // Loop
-            while (_queue.Count > 0)
-            {
-                MazeState currentState = _queue.Dequeue();
-
-                // We did it!
-                if (currentState.GoalsRemaining.Count == 0)
-                    return currentState.Step;
-
-                foreach (MazeCell newCell in currentState.Position.Connected)
-                {
-                    // Only proceed if we have not been there before
-                    if (currentState.TraveledPositions.Contains(newCell))
-                        continue;
-
-                    if (currentState.GoalsRemaining.Contains(newCell))
-                    {
-                        // Remove the TargetNumber cell as we got it!
-                        List<MazeCell> newRemaining = currentState.CloneAndSubtractGoalsRemaining(newCell);
-                        // Reset the positions we have traveled, because we may have to backtrack
-                        MazeState newState = new MazeState(currentState.Step + 1, newCell, new List<MazeCell>(),
-                            newRemaining);
-                        _queue.Enqueue(newState);
-                    }
-                    else
-                    {
-                        List<MazeCell> newList = currentState.CloneAndAddToTraveledPositions(currentState.Position);
-                        MazeState newState = new MazeState(currentState.Step + 1, newCell, newList, currentState.GoalsRemaining);
-                        _queue.Enqueue(newState);
-                    }
-                }
-            }
-            */
-
-            //return 0;
         }
 
-        public int GetMinimumDistanceAsTravelingSalesmanProblem(List<PairDistance> distances, List<MazeCell> goalCells)
+        public int GetMinimumDistanceAsTravelingSalesmanProblem(List<PairDistance> distances, List<Coordinate> goalCells, bool includeStartingPoint)
         {
             List<int> totalDistances = new List<int>();
             Queue<DistanceState> queue = new Queue<DistanceState>();
             List<int> goalPoints = new List<int>();
-            foreach (MazeCell cell in goalCells)
+            foreach (Coordinate cell in goalCells)
             {
-                if (cell.TargetNumber != 0)
-                    goalPoints.Add(cell.TargetNumber);
+                if (cell.GoalNumber != 0)
+                    goalPoints.Add(cell.GoalNumber);
             }
 
-            DistanceState initialState = new DistanceState() { CurrentPointer = 0, GoalCellsRemaining = goalPoints, TotalDistance = 0 };
+            DistanceState initialState = new DistanceState()
+            {
+                CurrentPointer = 0,
+                GoalCellsRemaining = goalPoints,
+                TotalDistance = 0
+            };
             queue.Enqueue(initialState);
             while (queue.Count > 0)
             {
                 DistanceState currentState = queue.Dequeue();
 
                 if (currentState.GoalCellsRemaining.Count == 0)
-                    totalDistances.Add(currentState.TotalDistance);
+                {
+                    int totalDistance = currentState.TotalDistance;
+                    if (includeStartingPoint)
+                    {
+                        int distanceBackToStart =
+                            distances.Find(
+                                d =>
+                                    (d.To == 0 && d.From == currentState.CurrentPointer) ||
+                                    (d.From == 0 && d.To == currentState.CurrentPointer)).Steps;
+                        totalDistance += distanceBackToStart;
+                    }
+
+                    totalDistances.Add(totalDistance);
+                }
                 else
                 {
                     foreach (int goalCell in currentState.GoalCellsRemaining)
                     {
-                        int matchingDistance = distances.Find(d => (d.To == goalCell && d.From == currentState.CurrentPointer) || (d.From == goalCell && d.To == currentState.CurrentPointer)).Steps;
+                        int matchingDistance =
+                            distances.Find(
+                                d =>
+                                    (d.To == goalCell && d.From == currentState.CurrentPointer) ||
+                                    (d.From == goalCell && d.To == currentState.CurrentPointer)).Steps;
                         List<int> newGoalCellsRemaining = currentState.CloneAndRemoveGoalCellsRemaining(goalCell);
                         DistanceState newState = new DistanceState()
                         {
@@ -206,102 +150,99 @@ namespace AdventOfCode2016
             return totalDistances[0];
         }
 
-        public int GetMinimumDistance(List<int> distances, int numberGoals)
+        public int NumberOfStepsToTarget(Coordinate startCoord, Coordinate targetCoord)
         {
-            List<int> totals = new List<int>();
-            var allSets = CombinationUtility.GetAllPermutationsToLength(distances, numberGoals);
-            foreach (var s in allSets)
+            Queue<MazeStep> queue = new Queue<MazeStep>();
+            MazeStep start = new MazeStep(startCoord, 0, null);
+            List<Coordinate> allPreviousCoordinates = new List<Coordinate>();
+            queue.Enqueue(start);
+
+            // Keep iterating over queue until we get a result
+            do
             {
-                int total = 0;
-                foreach (int i in s)
-                {
-                    total += i;
-                }
-                totals.Add(total);
-            }
+                MazeStep currentState = queue.Dequeue();
 
-            totals.Sort();
-            return totals[0];
-        }
+                // If hits are target - return
+                if (currentState.ReachedDesintation(targetCoord))
+                    return currentState.Step;
 
-        public int NumberOfStepsToTarget(MazeCell start, MazeCell target)
-        {
-            Queue<MazeState> queue = new Queue<MazeState>();
-            MazeState initialState = new MazeState(0, start, new List<MazeCell>());
-            queue.Enqueue(initialState);
-
-            // Loop
-            while (queue.Count > 0)
-            {
-                MazeState currentState = queue.Dequeue();
-
-                foreach (MazeCell newCell in currentState.Position.Connected)
-                {
-                    // We did it!
-                    if (newCell == target)
-                        return currentState.Step + 1;
-
-                    // Only proceed if we have not been there before
-                    if (currentState.TraveledPositions.Contains(newCell))
-                        continue;
-
-                    List<MazeCell> newList = currentState.CloneAndAddToTraveledPositions(currentState.Position);
-                    MazeState newState = new MazeState(currentState.Step + 1, newCell, newList);
-                    queue.Enqueue(newState);
-                }
-            }
+                // Figure out other valid paths and add them to queue while iterating step
+                EvaluateOpenSteps(currentState, queue, allPreviousCoordinates);
+                Debug.WriteLine($"prevCoord: {allPreviousCoordinates.Count} queue: {queue.Count}.");
+            } while (queue.Any());
 
             return 0;
         }
 
-        public List<List<MazeCell>> InitializeMaze(string input)
+        private void EvaluateOpenSteps(MazeStep mazeStep, Queue<MazeStep> queue, List<Coordinate> allPreviousCoordinates)
         {
-            List<List<MazeCell>> maze = new List<List<MazeCell>>();
+            if (HaveNotAlreadyBeenToCoordinate(mazeStep.Coord, allPreviousCoordinates) == true)
+            {
+                allPreviousCoordinates.Add(mazeStep.Coord);
+                Coordinate north = new Coordinate(mazeStep.Coord.X, mazeStep.Coord.Y - 1);
+                if (IsOpenSpace(north) == true && HaveNotAlreadyBeenToCoordinate(north, allPreviousCoordinates) == true)
+                {
+                    MazeStep northStep = new MazeStep(north, mazeStep.Step + 1, null);
+                    queue.Enqueue(northStep);
+                }
+                Coordinate east = new Coordinate(mazeStep.Coord.X + 1, mazeStep.Coord.Y);
+                if (IsOpenSpace(east) == true && HaveNotAlreadyBeenToCoordinate(east, allPreviousCoordinates) == true)
+                {
+                    MazeStep eastStep = new MazeStep(east, mazeStep.Step + 1, null);
+                    queue.Enqueue(eastStep);
+                }
+                Coordinate south = new Coordinate(mazeStep.Coord.X, mazeStep.Coord.Y + 1);
+                if (IsOpenSpace(south) == true && HaveNotAlreadyBeenToCoordinate(south, allPreviousCoordinates) == true)
+                {
+                    MazeStep southStep = new MazeStep(south, mazeStep.Step + 1, null);
+                    queue.Enqueue(southStep);
+                }
+                Coordinate west = new Coordinate(mazeStep.Coord.X - 1, mazeStep.Coord.Y);
+                if (IsOpenSpace(west) == true && HaveNotAlreadyBeenToCoordinate(west, allPreviousCoordinates) == true)
+                {
+                    MazeStep westStep = new MazeStep(west, mazeStep.Step + 1, null);
+                    queue.Enqueue(westStep);
+                }
+            }
+        }
+
+        public bool HaveNotAlreadyBeenToCoordinate(Coordinate coord, List<Coordinate> allPreviousCoordinates)
+        {
+            bool contains = allPreviousCoordinates.Contains(coord, new CoordinateEqualityComparer());
+            return contains == false;
+        }
+
+        public bool IsOpenSpace(Coordinate targetCoord)
+        {
+            int x = targetCoord.X;
+            int y = targetCoord.Y;
+
+            // Cannot be negative or outside range of _maze
+            if (x < 0 || y < 0 || x > _maze[0].Count || y > _maze.Count)
+                return false;
+
+            Coordinate coord = _maze[y][x];
+            return coord.IsAvailable;
+        }
+
+        public List<List<Coordinate>> InitializeMaze(string input)
+        {
+            List<List<Coordinate>> maze = new List<List<Coordinate>>();
 
             int y = 0;
-            List<string> lineInputs = input.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            List<string> lineInputs =
+                input.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
             foreach (string lineInput in lineInputs)
             {
-                List<MazeCell> row = new List<MazeCell>();
+                List<Coordinate> row = new List<Coordinate>();
                 int x = 0;
-                foreach (char c in lineInput.ToCharArray())
+                foreach (char c in lineInput)
                 {
-                    MazeCell cell = new MazeCell(c, x, y);
-                    row.Add(cell);
+                    Coordinate coord = new Coordinate(c, x, y);
+                    row.Add(coord);
                     x++;
                 }
                 maze.Add(row);
-                y++;
-            }
-
-            // Create linkages so we can iterate faster
-            y = 0;
-            foreach (List<MazeCell> row in maze)
-            {
-                int x = 0;
-                foreach (MazeCell cell in row)
-                {
-                    if (cell.IsOpen)
-                    {
-                        // Check neighbors
-                        // North
-                        if (y > 0 && maze[y - 1][x].IsOpen)
-                            cell.Connected.Add(maze[y - 1][x]);
-
-                        // East
-                        if (x < (row.Count - 1) && maze[y][x + 1].IsOpen)
-                            cell.Connected.Add(maze[y][x + 1]);
-
-                        // South
-                        if (y < (maze.Count - 1) && maze[y + 1][x].IsOpen)
-                            cell.Connected.Add(maze[y + 1][x]);
-
-                        // West
-                        if (x > 0 && maze[y][x - 1].IsOpen)
-                            cell.Connected.Add(maze[y][x - 1]);
-                    }
-                    x++;
-                }
                 y++;
             }
 
@@ -333,63 +274,5 @@ namespace AdventOfCode2016
         public int From;
         public int To;
         public int Steps;
-    }
-
-    public class MazeState
-    {
-        public int Step;
-        public MazeCell Position;
-        public List<MazeCell> TraveledPositions;
-
-        public MazeState(int step, MazeCell position, List<MazeCell> traveledPositions)
-        {
-            Step = step;
-            Position = position;
-            TraveledPositions = traveledPositions;
-        }
-
-        public List<MazeCell> CloneAndAddToTraveledPositions(MazeCell position)
-        {
-            // Have to clone the list
-            List<MazeCell> list = new List<MazeCell>();
-            foreach (MazeCell cell in TraveledPositions)
-            {
-                list.Add(cell);
-            }
-            list.Add(position);
-            return list;
-        }
-    }
-
-    public class MazeCell
-    {
-        public string Id;
-        public bool IsOpen;
-        public int TargetNumber;
-
-        public List<MazeCell> Connected;
-
-        public MazeCell(char input, int x, int y)
-        {
-            Id = $"{y}{x}";
-            Connected = new List<MazeCell>();
-
-            if (input == '#')
-            {
-                IsOpen = false;
-                TargetNumber = -1;
-            }
-            if (input == '.')
-            {
-                IsOpen = true;
-                TargetNumber = -1;
-            }
-            int attempt;
-            if (Int32.TryParse(input.ToString(), out attempt))
-            {
-                IsOpen = true;
-                TargetNumber = attempt;
-            }
-        }
     }
 }

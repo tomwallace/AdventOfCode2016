@@ -114,7 +114,6 @@ jnz 1 -21";
             return 0;
         }
 
-        // TODO: Extract this, the one from Day 23 and the one from Day 12? to a utility class that handles all
         // Process the instructions.  If the int is not 0 then jump that many relative instructions away.
         public int ProcessInstruction(string instruction)
         {

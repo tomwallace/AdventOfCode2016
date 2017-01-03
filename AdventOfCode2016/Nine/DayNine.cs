@@ -56,7 +56,6 @@ namespace AdventOfCode2016.Nine
             return finalResult;
         }
 
-        // TODO: Refactor this into a recursive mechanism
         public string DecompressInput(string input)
         {
             string result = "";

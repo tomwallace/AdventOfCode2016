@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2016
 {
     public class DayEleven
     {
         private List<FloorState> _queue = new List<FloorState>();
+        private List<FloorState> _previousStates = new List<FloorState>();
 
         public int NumberOfPossibleStepsToSafelyMoveObjects(List<List<string>> objectFloors)
         {
@@ -29,215 +28,69 @@ namespace AdventOfCode2016
                 {
                     ProcessFloorStatePossibilities(firstFloorState);
                 }
+                Debug.WriteLine($"steps: {firstFloorState.Step} state: {firstFloorState} prevStates: {_previousStates.Count} queue: {_queue.Count}.");
             } while (_queue.Any());
 
             // Will never get there
             return 0;
         }
 
-        // TODO: Hit out of memory - too many state changes - REVIEW the combinations bit (eliminate order duplicates)
         public void ProcessFloorStatePossibilities(FloorState floorState)
         {
-            // Otherwise recurse over other possibilities
-            // Collect list of possible elevator stops
             List<int> possibleElevatorStops = floorState.ListOfPossibleFloors();
             foreach (int targetedFloor in possibleElevatorStops)
             {
-                bool canMovePairInvalidCombo = false;
-
                 // Now need to handle all valid pairs
                 List<string> objectFloorForPairs = floorState.CurrentObjectFloor().ToList();
-                /*
-                var combinations = from item1 in objectFloorForPairs
-                                   from item2 in objectFloorForPairs
-                                   where item1 != item2
-                                   select Tuple.Create(item1, item2);
-                */
-                var combinations = from pair in objectFloorForPairs.Select((value, index) => new { value, index })
-                                   from second in objectFloorForPairs.Skip(pair.index + 1)
-                                   select Tuple.Create(pair.value, second);
+                var combinations = CombinationUtility.GetAllPermutationPairsOrderDoesNotMatter(objectFloorForPairs);
                 foreach (var combo in combinations)
                 {
                     // If the two items are of different types, need to make sure valid
+                    /*
                     string element = combo.Item1.Substring(0, 1);
                     if ((combo.Item1.Contains("M") && combo.Item2.Contains("M")) ||
                         (combo.Item1.Contains("G") && combo.Item2.Contains("G")) ||
                          combo.Item2.Contains(element))
                     {
-                        List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
-                        copyOfObjectFloors[targetedFloor].Add(combo.Item1);
-                        copyOfObjectFloors[targetedFloor].Add(combo.Item2);
-                        copyOfObjectFloors[floorState.Elevator].Remove(combo.Item1);
-                        copyOfObjectFloors[floorState.Elevator].Remove(combo.Item2);
+                    */
+                    List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
+                    copyOfObjectFloors[targetedFloor].Add(combo.Item1);
+                    copyOfObjectFloors[targetedFloor].Add(combo.Item2);
+                    copyOfObjectFloors[floorState.Elevator].Remove(combo.Item1);
+                    copyOfObjectFloors[floorState.Elevator].Remove(combo.Item2);
 
-                        // Make new FloorState and if valid, add to queue
-                        FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
-                        if (!newFloorState.IsInvalidSituation() && floorState.HaveNotSeenBefore(newFloorState))
-                        {
-                            newFloorState.PreviousStates.Add(floorState);
-                            _queue.Add(newFloorState);
-                            canMovePairInvalidCombo = true;
-                        }
-                    }
-                    else
+                    // Make new FloorState and if valid, add to queue
+                    FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
+                    if (!newFloorState.IsInvalidSituation() && floorState.PreviousStates.Contains(newFloorState, new FloorStateEqualityComparer()) == false)
                     {
-                        List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
-                        copyOfObjectFloors[targetedFloor].Add(combo.Item1);
-                        copyOfObjectFloors[targetedFloor].Add(combo.Item2);
-                        copyOfObjectFloors[floorState.Elevator].Remove(combo.Item1);
-                        copyOfObjectFloors[floorState.Elevator].Remove(combo.Item2);
-
-                        // Make new FloorState and if valid, add to queue
-                        FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
-                        if (!newFloorState.IsInvalidSituation() && floorState.HaveNotSeenBefore(newFloorState))
-                        {
-                            newFloorState.PreviousStates.Add(floorState);
-                            _queue.Add(newFloorState);
-                            canMovePairInvalidCombo = false;
-                        }
+                        var prevStates = floorState.DeepClonePreviousStates();
+                        prevStates.Add(floorState);
+                        newFloorState.PreviousStates = prevStates;
+                        _queue.Add(newFloorState);
                     }
                 }
 
                 // Can move one element, but only if there was not a valid pair movement
                 List<string> objectFloor = floorState.CurrentObjectFloor().ToList();
-                if (!canMovePairInvalidCombo)
-                {
-                    foreach (string obj in objectFloor)
-                    {
-                        // Make a copy so we can modify original
-                        List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
-                        copyOfObjectFloors[targetedFloor].Add(obj);
-                        copyOfObjectFloors[floorState.Elevator].Remove(obj);
-
-                        // Make new FloorState and if valid, add to queue
-                        FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
-                        if (!newFloorState.IsInvalidSituation() && floorState.HaveNotSeenBefore(newFloorState))
-                        {
-                            newFloorState.PreviousStates.Add(floorState);
-                            _queue.Add(newFloorState);
-                        }
-                    }
-                }
-            }
-        }
-
-        /*
-        public List<int> RecurseOverSteps(List<List<string>> objectFloors, int elevator,
-            int stepCounter, List<int> results)
-        {
-            // If success, then return step counter
-            if (IsComplete(objectFloors, elevator))
-            {
-                results.Add(stepCounter);
-                return results;
-            }
-
-            // If invalid conditions, then return invalid number
-            if (IsInvalidSituation(objectFloors))
-                return results;
-
-            // Otherwise recurse over other possibilities
-            // Collect list of possible elevator stops
-            List<int> possibleElevatorStops = ListOfPossibleFloors(elevator);
-            foreach (int targetedFloor in possibleElevatorStops)
-            {
-                List<string> objectFloor = objectFloors[elevator].ToList();
-                // Can always move one element
                 foreach (string obj in objectFloor)
                 {
                     // Make a copy so we can modify original
-                    List<List<string>> copyOfObjectFloors = objectFloors.ToList();
+                    List<List<string>> copyOfObjectFloors = floorState.DeepCloneObjectFloors();
                     copyOfObjectFloors[targetedFloor].Add(obj);
-                    copyOfObjectFloors[elevator].Remove(obj);
-                    results.AddRange(RecurseOverSteps(copyOfObjectFloors, targetedFloor, stepCounter + 1, results));
-                }
-                // Now need to handle all valid pairs
-                List<string> objectFloorForPairs = objectFloors[elevator].ToList();
-                var combinations = from item1 in objectFloorForPairs
-                                   from item2 in objectFloorForPairs
-                                   where item1 != item2
-                                   select Tuple.Create(item1, item2);
-                foreach (var combo in combinations)
-                {
-                    // If the two items are of different types, need to make sure valid
-                    if ((combo.Item1.Contains("M") && !combo.Item2.Contains("M")) ||
-                        (combo.Item2.Contains("M") && !combo.Item1.Contains("M")))
+                    copyOfObjectFloors[floorState.Elevator].Remove(obj);
+
+                    // Make new FloorState and if valid, add to queue
+                    FloorState newFloorState = new FloorState(floorState.Step + 1, copyOfObjectFloors, targetedFloor);
+                    if (!newFloorState.IsInvalidSituation() && floorState.PreviousStates.Contains(newFloorState, new FloorStateEqualityComparer()) == false)
                     {
-                        // Only if they are of the same element can we proceed
-                        if (combo.Item1.Substring(0, 1) == combo.Item2.Substring(0, 1))
-                        {
-                            List<List<string>> copyOfObjectFloors = objectFloors.ToList();
-                            copyOfObjectFloors[targetedFloor].Add(combo.Item1);
-                            copyOfObjectFloors[targetedFloor].Add(combo.Item2);
-                            copyOfObjectFloors[elevator].Remove(combo.Item1);
-                            copyOfObjectFloors[elevator].Remove(combo.Item2);
-                            results.AddRange(RecurseOverSteps(copyOfObjectFloors, targetedFloor, stepCounter + 1, results));
-                        }
-                    }
-                    else
-                    {
-                        List<List<string>> copyOfObjectFloors = objectFloors.ToList();
-                        copyOfObjectFloors[targetedFloor].Add(combo.Item1);
-                        copyOfObjectFloors[targetedFloor].Add(combo.Item2);
-                        copyOfObjectFloors[elevator].Remove(combo.Item1);
-                        copyOfObjectFloors[elevator].Remove(combo.Item2);
-                        results.AddRange(RecurseOverSteps(copyOfObjectFloors, targetedFloor, stepCounter + 1, results));
+                        var prevStates = floorState.DeepClonePreviousStates();
+                        prevStates.Add(floorState);
+                        newFloorState.PreviousStates = prevStates;
+                        _queue.Add(newFloorState);
                     }
                 }
             }
-            return results;
         }
-
-        public bool IsComplete(List<List<string>> objectFloors, int elevator)
-        {
-            if (objectFloors[0].Count > 0 || objectFloors[1].Count > 0 || objectFloors[2].Count > 0 || elevator != 3)
-                return false;
-
-            return true;
-        }
-
-        public bool IsInvalidSituation(List<List<string>> objectFloors)
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                List<string> rtgs = new List<string>();
-                List<string> microChips = new List<string>();
-
-                // Split the rtgs and chips up
-                foreach (string obj in objectFloors[i])
-                {
-                    if (obj.Contains("M"))
-                        microChips.Add(obj.Substring(0, 1));
-                    else
-                        rtgs.Add(obj.Substring(0, 1));
-                }
-
-                // If there are any rtgs, need to check that chips match
-                if (rtgs.Count() > 0)
-                {
-                    foreach (string microChip in microChips)
-                    {
-                        if (!rtgs.Contains(microChip))
-                            return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public List<int> ListOfPossibleFloors(int elevator)
-        {
-            List<int> results = new List<int>();
-            if (elevator > 0)
-                results.Add(elevator - 1);
-
-            if (elevator < 3)
-                results.Add(elevator + 1);
-
-            return results;
-        }
-        */
     }
 
     public class FloorState
@@ -258,6 +111,20 @@ namespace AdventOfCode2016
             PreviousStates = new List<FloorState>();
         }
 
+        public override string ToString()
+        {
+            string concat = "";
+            for (int i = 0; i < 4; i++)
+            {
+                for (int y = 0; y < ObjectFloors[i].Count; y++)
+                {
+                    concat = string.Concat(concat, ObjectFloors[i][y]);
+                }
+                concat = string.Concat(concat, "-");
+            }
+            return concat;
+        }
+
         public bool IsInvalidSituation()
         {
             for (int i = 0; i < 4; i++)
@@ -275,7 +142,7 @@ namespace AdventOfCode2016
                 }
 
                 // If there are any rtgs, need to check that chips match
-                if (rtgs.Count() > 0)
+                if (rtgs.Any())
                 {
                     foreach (string microChip in microChips)
                     {
@@ -300,13 +167,15 @@ namespace AdventOfCode2016
         {
             List<int> results = new List<int>();
             // Don't go down if there is nothing to go down for
+            /*
             bool anythingBelow = false;
             for (int i = 0; i < Elevator; i++)
             {
                 if (ObjectFloors[i].Count > 0)
                     anythingBelow = true;
             }
-            if (Elevator > 0 && anythingBelow)
+            */
+            if (Elevator > 0)// && anythingBelow)
                 results.Add(Elevator - 1);
 
             if (Elevator < 3)
@@ -336,37 +205,91 @@ namespace AdventOfCode2016
             return clone;
         }
 
-        public bool HaveNotSeenBefore(FloorState floorState)
+        public List<FloorState> DeepClonePreviousStates()
         {
-            // All state pairs are interchangeable
-            bool result = false;
-            if (PreviousStates.Find(ByObjectFloors(floorState)) != null)
+            List<FloorState> clone = new List<FloorState>();
+            foreach (FloorState floorState in PreviousStates)
+            {
+                clone.Add(floorState);
+            }
+            return clone;
+        }
+    }
+
+    public class FloorStateEqualityComparer : IEqualityComparer<FloorState>
+    {
+        public bool Equals(FloorState c1, FloorState c2)
+        {
+            if (c2 == null && c1 == null)
+                return true;
+            if (c1 == null | c2 == null)
                 return false;
 
-            return true;
+            // Create lists for comparison
+            List<List<int>> c1Pairs = CreateListOfPairs(c1.ObjectFloors);
+            List<List<int>> c2Pairs = CreateListOfPairs(c2.ObjectFloors);
+
+            foreach (List<int> c1Pair in c1Pairs)
+            {
+                if (c2Pairs.Find(x => x[0] == c1Pair[0] && x[1] == c1Pair[1]) == null)
+                    return false;
+            }
+
+            // Elevators also have to be equal for the same state to exist
+            return c1.Elevator == c2.Elevator;
         }
 
-        private static Predicate<FloorState> ByObjectFloors(FloorState floorState)
+        public int GetHashCode(FloorState f)
         {
-            return delegate (FloorState other)
+            string concat = "";
+            for (int i = 0; i < 4; i++)
             {
-                bool match = true;
-                for (int i = 0; i < 4; i++)
-                {
-                    // If pairs per floor do not match, then return false
-                    int currentMicrochips = floorState.ObjectFloors[i].FindAll(m => m.Contains("M")).Count;
-                    int currentGenerators = floorState.ObjectFloors[i].FindAll(m => m.Contains("G")).Count;
-                    int otherMicrochips = floorState.ObjectFloors[i].FindAll(m => m.Contains("M")).Count;
-                    int otherGenerators = floorState.ObjectFloors[i].FindAll(m => m.Contains("G")).Count;
+                foreach (string s in f.ObjectFloors[i])
+                    concat = string.Concat(concat, s);
+            }
+            return concat.GetHashCode();
+        }
 
-                    if (currentMicrochips == otherMicrochips && currentGenerators == otherGenerators)
+        public List<List<int>> CreateListOfPairs(List<List<string>> floors)
+        {
+            Dictionary<string, List<int>> pairs = new Dictionary<string, List<int>>();
+            for (int i = 0; i < 4; i++)
+            {
+                foreach (string obj in floors[i])
+                {
+                    string letter = obj.Substring(0, 1);
+                    if (pairs.ContainsKey(letter))
                     {
-                        match = false;
-                        break;
+                        if (obj.Contains("M"))
+                            pairs[letter][0] = i;
+                        else
+                            pairs[letter][1] = i;
+                    }
+                    else
+                    {
+                        List<int> list = new List<int>();
+                        if (obj.Contains("M"))
+                        {
+                            list.Add(i);
+                            list.Add(-1);
+                        }
+                        else
+                        {
+                            list.Add(-1);
+                            list.Add(i);
+                        }
+                        pairs.Add(letter, list);
                     }
                 }
-                return match;
-            };
+            }
+
+            List<List<int>> results = new List<List<int>>();
+            foreach (var entry in pairs)
+            {
+                results.Add(entry.Value);
+            }
+
+            return results;
         }
     }
 }

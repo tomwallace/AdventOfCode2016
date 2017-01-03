@@ -15,7 +15,6 @@ namespace AdventOfCode2016
                     (t1, t2) => t1.Concat(new T[] { t2 }));
         }
 
-        // TODO: Include usage in DayEleven
         public static IEnumerable<Tuple<T, T>> GetAllPermutationPairsOrderDoesNotMatter<T>(IEnumerable<T> list)
         {
             var combinations = from pair in list.Select((value, index) => new { value, index })

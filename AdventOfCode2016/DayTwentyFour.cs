@@ -52,7 +52,6 @@ namespace AdventOfCode2016
 
         public List<List<Coordinate>> _maze;
 
-        // TODO: Clean up code as necessary
         public int CountOfMinimumStepsNeededForGoals(string input, bool includeStartingPoint)
         {
             _maze = InitializeMaze(input);
